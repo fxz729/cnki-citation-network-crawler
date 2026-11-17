@@ -1,0 +1,31 @@
+[Unit]
+Description=CNKI scraper shared %i of 8
+After=network-online.target
+Wants=network-online.target
+StartLimitIntervalSec=3600
+StartLimitBurst=5
+
+[Service]
+Type=simple
+User=cnki-scraper
+Group=cnki-scraper
+WorkingDirectory=/opt/cnki-single-scraper-production
+UMask=0077
+ExecStart=/usr/bin/flock -n /opt/cnki-single-scraper-production/cache-3/shard-%i/.scraper.lock /opt/cnki-single-scraper-production/.venv/bin/python -u main.py --shard-id %i --shard-count 8 --shard-output-root output-3 --shard-cache-root cache-3 --shard-log-root logs-3 --auto-detect-years --year-end 2026 --year-start-floor 2016 --page-size 50 --max-pages 0 --relation-page-size 10 --max-relation-pages 0 --delay-min 10 --delay-max 15 --max-retries 2 --backoff-factor 20 --resume
+Restart=on-failure
+RestartPreventExitStatus=75 76
+RestartSec=300
+TimeoutStopSec=30
+MemoryMax=512M
+TasksMax=128
+NoNewPrivileges=true
+PrivateTmp=true
+PrivateDevices=true
+ProtectSystem=full
+ProtectHome=true
+ReadWritePaths=/opt/cnki-single-scraper-production/output-3
+ReadWritePaths=/opt/cnki-single-scraper-production/cache-3
+ReadWritePaths=/opt/cnki-single-scraper-production/logs-3
+
+[Install]
+WantedBy=multi-user.target

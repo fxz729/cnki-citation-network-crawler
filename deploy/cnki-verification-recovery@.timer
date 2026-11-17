@@ -1,0 +1,13 @@
+[Unit]
+Description=CNKI verification recovery timer for shard %i
+After=network-online.target
+Wants=network-online.target
+
+[Timer]
+OnBootSec=1min
+OnUnitActiveSec=1min
+RandomizedDelaySec=10s
+Unit=cnki-verification-recovery@%i.service
+
+[Install]
+WantedBy=timers.target

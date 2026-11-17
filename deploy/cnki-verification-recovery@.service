@@ -1,0 +1,20 @@
+[Unit]
+Description=CNKI verification recovery probe for shard %i
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=oneshot
+User=cnki-scraper
+Group=cnki-scraper
+WorkingDirectory=/opt/cnki-single-scraper-production
+ExecStart=/opt/cnki-single-scraper-production/.venv/bin/python -u verification_recovery.py --shard-id %i --shard-count 8
+ExecStartPost=+/opt/cnki-single-scraper-production/.venv/bin/python -u verification_recovery.py --shard-id %i --shard-count 8 --start-if-ready
+NoNewPrivileges=true
+PrivateTmp=true
+PrivateDevices=true
+ProtectSystem=full
+ProtectHome=true
+ReadWritePaths=/opt/cnki-single-scraper-production/output-3
+ReadWritePaths=/opt/cnki-single-scraper-production/cache-3
+ReadWritePaths=/opt/cnki-single-scraper-production/logs-3
